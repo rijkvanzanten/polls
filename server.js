@@ -29,7 +29,7 @@ io.on('connection', socket => {
 });
 
 function getHome(req, res) {
-  respond('home', res);
+  return res.send(toString(renderHome()));
 }
 
 function postHome(req, res) {
@@ -66,13 +66,4 @@ function createRoom(id, question, answers) {
     };
   });
   db.put(id, {question, options});
-}
-
-function respond(view, res) {
-  switch (view) {
-    case 'home':
-      return res.send(toString(renderHome()));
-    default:
-      return res.send('¯\\_(ツ)_/¯');
-  }
 }
