@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const shortid = require('shortid');
 const Socket = require('socket.io');
 const toString = require('vdom-to-html');
+const uuidV1 = require('uuid/v1');
 const compression = require('compression');
+const session = require('express-session');
 const db = require('levelup')('polls-db', {
   valueEncoding: 'json'
 });
@@ -16,6 +18,13 @@ const port = process.env.PORT || 3000;
 const server = express()
   .use(compression())
   .use(bodyParser.urlencoded({extended: false}))
+  .use(session({
+    secret: uuidV1(),
+    saveUninitialized: true,
+    resave: false,
+    cookie: {maxAge: 86400000}
+  }))
+  .use(initSession)
   .get('/', getHome)
   .post('/', postHome)
   .get('/:id', getRoom)
@@ -27,6 +36,14 @@ const io = new Socket(server);
 io.on('connection', socket => {
 
 });
+
+function initSession(req, res, next) {
+  if (!req.session.voted) {
+    req.session.voted = [];
+  }
+
+  return next();
+}
 
 function getHome(req, res) {
   return res.send(toString(renderHome()));
