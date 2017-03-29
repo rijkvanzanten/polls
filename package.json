@@ -7,7 +7,7 @@
     "lint": "stylelint src/**/*.css & xo",
     "build-js": "browserify src/index.js -t [ babelify --presets [ es2015 ] ] -p bundle-collapser/plugin | esmangle > public/index.js",
     "build-css": "postcss src/*.css --use postcss-cssnext | csso -o public/style.css",
-    "build": "npm run build-js && npm run build-css",
+    "build": "npm run build-css && npm run build-js",
     "dev-server": "nodemon server.js --watch lib --watch src --watch server.js",
     "dev-client": "nodemon -e css,js --watch src --exec \"npm run build\"",
     "start": "npm run lint && npm run build && node server.js"
