@@ -5,7 +5,11 @@
   "description": "Kahoot clone, omdat het kan",
   "scripts": {
     "lint": "stylelint src/**/*.css & xo",
-    "build": "node tasks.js",
+    "watch-client": "nodemon --watch src --watch lib --exec \"npm run build\"",
+    "watch-server": "nodemon server.js --watch server.js",
+    "build-js": "node tasks.js js",
+    "build-css": "node tasks.js css",
+    "build": "npm run build-js & npm run build-css",
     "start": "npm run lint && npm run build && node server.js"
   },
   "keywords": [],
