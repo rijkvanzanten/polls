@@ -1,0 +1,32 @@
+@font-face {
+  font-family: 'Lobster';
+  src:
+    url('/static/lobster-regular-webfont.woff2') format('woff2'),
+    url('/static/lobster-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  font-family: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+html {
+  font-family: system-ui;
+  font-size: 150%;
+}
+
+body {
+  background-color: #ff3f5f;
+  background-image: linear-gradient(to top, #ff0844 0%, #ffb199 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: white;
+}
+
+.fonts-loaded h1 {
+  font-family: 'Lobster', fantasy;
+}

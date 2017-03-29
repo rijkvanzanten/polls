@@ -114,6 +114,7 @@ function respond(res, vdom) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polls</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/fontfaceobserver.js"></script>
     <script src="/static/index.js" defer></script>
     ${doc}
   `);
