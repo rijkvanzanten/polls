@@ -38,3 +38,6 @@ jspm_packages
 
 .DS_Store
 polls-db
+
+public/*.js
+public/*.css
