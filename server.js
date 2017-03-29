@@ -38,6 +38,12 @@ io.on('connection', socket => {
 });
 
 function initSession(req, res, next) {
+  if (req.headers.cookie) {
+    res.locals.cookiesEnabled = true;
+  } else {
+    res.locals.cookiesEnabled = false;
+  }
+
   if (!req.session.voted) {
     req.session.voted = [];
   }
@@ -60,15 +66,24 @@ function getRoom(req, res) {
     if (err) {
       res.redirect('/');
     } else {
-      res.send(toString(renderResult(req.params.id, val)));
+      const votingAllowed = res.locals.cookiesEnabled && req.session.voted.includes(req.params.id) === false;
+      res.send(toString(renderResult(req.params.id, val, votingAllowed)));
     }
   });
 }
 
 function vote(req, res) {
+  // Disable voting when cookies aren't enabled or already has voted on
+  if (!res.locals.cookiesEnabled || req.session.voted.includes(req.params.id)) {
+    return res.redirect('/' + req.params.id);
+  }
+
   db.get(req.params.id, (err, val) => {
     val.options[req.params.answerId].votes++;
     db.put(req.params.id, val, () => {
+      if (!req.session.voted.includes(req.params.id)) {
+        req.session.voted.push(req.params.id);
+      }
       res.redirect('/' + req.params.id);
     });
   });
