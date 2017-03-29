@@ -4,8 +4,14 @@
   "version": "1.0.0",
   "description": "Kahoot clone, omdat het kan",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js"
+    "lint": "stylelint src/**/*.css & xo",
+    "build-js": "browserify src/index.js -t [ babelify --presets [ es2015 ] ] -p bundle-collapser/plugin | esmangle > public/index.js",
+    "watch-js": "watchify src/index.js --debug -o public/index.js -v",
+    "build-css": "postcss src/*.css --use postcss-cssnext | csso -o public/style.css",
+    "watch-css": "nodemon -e css -w src -x \"npm run build-css\"",
+    "build": "npm run build-js && npm run build-css",
+    "dev": "nodemon server.js --watch server.js --watch lib & open http://localhost:3000 & npm run watch-css & npm run watch-js",
+    "start": "npm run lint && npm run build && node server.js"
   },
   "keywords": [],
   "author": "Rijk van Zanten <rijkvanzanten@me.com> (rijks.website)",
@@ -32,7 +38,16 @@
     "esnext": false
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.24.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.1.0",
+    "bundle-collapser": "^1.2.1",
+    "csso-cli": "^1.0.0",
+    "esmangle": "^1.0.1",
     "nodemon": "^1.11.0",
+    "postcss": "^5.2.16",
+    "postcss-cli": "^3.0.0",
+    "postcss-cssnext": "^2.10.0",
     "stylelint": "^7.9.0",
     "stylelint-config-standard": "^16.0.0",
     "xo": "^0.18.1"
