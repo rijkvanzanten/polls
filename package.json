@@ -5,16 +5,7 @@
   "description": "Kahoot clone, omdat het kan",
   "scripts": {
     "lint": "stylelint src/**/*.css & xo",
-<<<<<<< HEAD
-    "build-js-index": "browserify src/index.js -t [ babelify --presets [ es2015 ] ] -p bundle-collapser/plugin | esmangle > public/index.js",
-    "build-js-ffo": "browserify src/fontfaceobserver.js -t [ babelify --presets [ es2015 ] ] -p bundle-collapser/plugin | esmangle > public/fontfaceobserver.js",
-    "build-css": "postcss src/*.css --use postcss-cssnext | csso -o public/style.css",
-    "build": "npm run build-css && npm run build-js-index && npm run build-js-ffo",
-    "dev-server": "nodemon server.js --watch lib --watch src --watch server.js",
-    "dev-client": "nodemon -e css,js --watch src --exec \"npm run build\"",
-=======
     "build": "node tasks.js",
->>>>>>> master
     "start": "npm run lint && npm run build && node server.js"
   },
   "keywords": [],
@@ -53,11 +44,7 @@
     "postcss-cssnext": "^2.10.0",
     "stylelint": "^7.9.0",
     "stylelint-config-standard": "^16.0.0",
-<<<<<<< HEAD
-    "watchify": "^3.9.0",
-=======
     "uglifyify": "^3.0.4",
->>>>>>> master
     "xo": "^0.18.1"
   }
 }
