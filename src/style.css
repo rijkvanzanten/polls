@@ -25,6 +25,53 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   color: white;
+  text-align: center;
+}
+
+h1 {
+  margin: 1em;
+  font-size: 3em;
+}
+
+form * {
+  display: block;
+  margin: 1em auto;
+  font-size: 1rem;
+}
+
+form input,
+form textarea {
+  appearance: none;
+  border: none;
+  background-color: transparent;
+  width: 50vw;
+  padding: 0.5em;
+
+  &:focus {
+    background-color: #fff5;
+    outline: 0;
+  }
+}
+
+form input {
+  border-bottom: 4px solid white;
+}
+
+form textarea {
+  border-left: 4px solid white;
+}
+
+form button {
+  background-color: transparent;
+  padding: 1em 2em;
+  border-radius: 10px;
+  color: white;
+  border: 3px solid white;
+
+  &:focus {
+    background-color: #fff5;
+    outline: 0;
+  }
 }
 
 .fonts-loaded h1 {
