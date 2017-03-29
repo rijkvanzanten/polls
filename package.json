@@ -6,11 +6,10 @@
   "scripts": {
     "lint": "stylelint src/**/*.css & xo",
     "build-js": "browserify src/index.js -t [ babelify --presets [ es2015 ] ] -p bundle-collapser/plugin | esmangle > public/index.js",
-    "watch-js": "watchify src/index.js --debug -o public/index.js -v",
     "build-css": "postcss src/*.css --use postcss-cssnext | csso -o public/style.css",
-    "watch-css": "nodemon -e css -w src -x \"npm run build-css\"",
     "build": "npm run build-js && npm run build-css",
-    "dev": "nodemon server.js --watch server.js --watch lib & open http://localhost:3000 & npm run watch-css & npm run watch-js",
+    "dev-server": "nodemon --watch lib --watch src server.js",
+    "dev-client": "nodemon -e css,js --watch src --exec \"npm run build\"",
     "start": "npm run lint && npm run build && node server.js"
   },
   "keywords": [],
