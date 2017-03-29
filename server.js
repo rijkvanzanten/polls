@@ -68,7 +68,7 @@ function getRoom(req, res) {
       res.redirect('/');
     } else {
       const votingAllowed = res.locals.cookiesEnabled && req.session.voted.includes(req.params.id) === false;
-      res.send(toString(renderResult(req.params.id, val, votingAllowed)));
+      respond(res, renderResult(req.params.id, val, votingAllowed));
     }
   });
 }
