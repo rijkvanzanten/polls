@@ -1,1 +1,1 @@
-console.log('hi there');
+() => { console.log('test'); }
