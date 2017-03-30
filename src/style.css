@@ -17,6 +17,7 @@
 html {
   font-family: system-ui;
   font-size: 150%;
+  height: 100%;
 }
 
 body {
@@ -26,6 +27,7 @@ body {
   background-size: cover;
   color: white;
   text-align: center;
+  height: 100%;
 }
 
 h1 {
