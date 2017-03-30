@@ -17,6 +17,7 @@ const port = process.env.PORT || 3000;
 
 const server = express()
   .use(compression())
+  .use('/static/', express.static('public', {maxAge: '31d'}))
   .use(bodyParser.urlencoded({extended: false}))
   .use(session({
     secret: uuidV1(),
@@ -52,7 +53,7 @@ function initSession(req, res, next) {
 }
 
 function getHome(req, res) {
-  return res.send(toString(renderHome()));
+  return respond(res, renderHome());
 }
 
 function postHome(req, res) {
@@ -67,7 +68,7 @@ function getRoom(req, res) {
       res.redirect('/');
     } else {
       const votingAllowed = res.locals.cookiesEnabled && req.session.voted.includes(req.params.id) === false;
-      res.send(toString(renderResult(req.params.id, val, votingAllowed)));
+      respond(res, renderResult(req.params.id, val, votingAllowed));
     }
   });
 }
@@ -79,13 +80,17 @@ function vote(req, res) {
   }
 
   db.get(req.params.id, (err, val) => {
-    val.options[req.params.answerId].votes++;
-    db.put(req.params.id, val, () => {
-      if (!req.session.voted.includes(req.params.id)) {
-        req.session.voted.push(req.params.id);
-      }
-      res.redirect('/' + req.params.id);
-    });
+    if (err) {
+      res.redirect('/');
+    } else {
+      val.options[req.params.answerId].votes++;
+      db.put(req.params.id, val, () => {
+        if (!req.session.voted.includes(req.params.id)) {
+          req.session.voted.push(req.params.id);
+        }
+        res.redirect('/' + req.params.id);
+      });
+    }
   });
 }
 
@@ -98,4 +103,19 @@ function createRoom(id, question, answers) {
     };
   });
   db.put(id, {question, options});
+}
+
+function respond(res, vdom) {
+  const doc = toString(vdom);
+
+  res.send(`
+    <!doctype html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polls</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/fontfaceobserver.js"></script>
+    <script src="/static/index.js" defer></script>
+    ${doc}
+  `);
 }
