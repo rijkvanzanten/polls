@@ -129,7 +129,6 @@ function respond(res, vdom, data) {
     <meta name="theme-color" content="#ffffff">
     <script>var initData = ${JSON.stringify(data)};</script>
     <script src="/static/fontfaceobserver.js"></script>
-    <script src="/socket.io/socket.io.js" defer></script>
     <script src="/static/index.js" defer></script>
     ${doc}
   `);
