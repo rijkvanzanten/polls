@@ -32,11 +32,33 @@ const server = express()
   .get('/:id/:answerId', vote)
   .listen(port, host, () => console.log(`server started ${host}:${port} 💯`));
 
-const io = new Socket(server);
+const io = new Socket(server)
+  .on('connection', joinRoom)
+  .on('disconnect', leaveRoom);
 
-io.on('connection', socket => {
+function joinRoom(socket) {
+  const referer = socket.conn.request.headers.referer;
+  const id = referer.substr(referer.lastIndexOf('/') + 1);
+  socket.join(id);
 
-});
+  socket.on('vote', socketVote);
+
+  function socketVote(vote) {
+    vote = vote.split('/');
+    db.get(vote[0], (err, val) => {
+      val.options[vote[1]].votes++;
+      db.put(vote[0], val, () => {
+        io.in(vote[0]).emit('update', val);
+      });
+    });
+  }
+}
+
+function leaveRoom(socket) {
+  const referer = socket.conn.request.headers.referer;
+  const id = referer.substr(referer.lastIndexOf('/') + 1);
+  socket.leave(id);
+}
 
 function initSession(req, res, next) {
   if (req.headers.cookie) {
@@ -115,6 +137,7 @@ function respond(res, vdom) {
     <title>Polls</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/fontfaceobserver.js"></script>
+    <script src="/socket.io/socket.io.js" defer></script>
     <script src="/static/index.js" defer></script>
     ${doc}
   `);
