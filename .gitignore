@@ -42,3 +42,7 @@ polls-db
 public/*.js
 public/*.css
 public/*.map
+
+server.key
+server.crt
+server.csr
