@@ -75,6 +75,54 @@ Virtual DOM isn't a browser API or new technique so it should technically run on
 #### Fallback
 The virtual-dom rendering is also used on the server-side. When client-side JS fails or won't start at all, it will gracefully fall back to the server pre-rendered HTML. I won't update automatically anymore though, but new results can still be viewed by refreshing the page manually.
 
+### ServiceWorker
+A service worker is a script that the browser runs in the background, separate from a web page. This is very exiting, because it allows developers to create webpages which support offline experiences.
+
+#### Support (59.58%)
+-  [ ] IE
+-  [ ] Edge
+-  [x] Firefox (44+) (Partial)
+-  [x] Chrome (40+) (Partial)
+-  [ ] Safari
+-  [x] Opera (27+) (Partial)
+-  [ ] iOS Safari
+-  [ ] Opera Mini
+-  [x] Android Browser (56+) (Partial)
+-  [x] Chrome for Android (57+) (Partial)
+
+#### Fallback
+As long as you don't rely on the ServiceWorker for the inner workings of your app, you'll be fine. ServiceWorkers work beautifully progressively enhanced on all browsers which support ServiceWorkers. It can be easily feature checked by checking
+```js
+'serviceWorker' in navigator
+```
+
+### CSS Font Loading API
+Basically [fontfaceobserver](https://github.com/bramstein/fontfaceobserver) natively in the browser. Enables developers to run functionality when fonts are loaded.
+
+```js
+// That's all. Wonderful
+if ('FontFace' in window) {
+  document.fonts.ready.then(() => {
+    document.documentElement.classList.add('fonts-loaded');
+  });
+}
+```
+
+#### Support (59.58%)
+-  [ ] IE
+-  [ ] Edge
+-  [x] Firefox (41+)
+-  [x] Chrome (35+)
+-  [x] Safari (10+)
+-  [x] Opera (22+)
+-  [x] iOS Safari (10.2+)
+-  [ ] Opera Mini
+-  [x] Android Browser (56+)
+-  [x] Chrome for Android (57+)
+
+#### Fallback
+If the browser doesn't support CSS Font Loading API, the custom won't be applied to the DOM. This results in fallback fonts for the headers.
+
 ## Installation & Development
 To run a local copy of the app:  
 

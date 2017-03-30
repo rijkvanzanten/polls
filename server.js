@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const shortid = require('shortid');
@@ -15,6 +16,7 @@ const port = process.env.PORT || 3000;
 const server = express()
   .use(compression())
   .use('/static/', express.static('public', {maxAge: '31d'}))
+  .use('/sw.js', sendServiceWorker)
   .use(bodyParser.urlencoded({extended: false}))
   .get('/', getHome)
   .post('/', createInstance)
@@ -25,6 +27,10 @@ const server = express()
 const io = new Socket(server)
   .on('connection', connectSocket)
   .on('disconnect', disconnectSocket);
+
+function sendServiceWorker(req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'sw.js'));
+}
 
 function vote(questionId, answerId, callback) {
   db.get(questionId, (err, val) => {
@@ -119,6 +125,7 @@ function respond(res, vdom, data) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polls</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/fonts.css">
     <link rel="apple-touch-icon" sizes="180x180" hre/staticf="/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" href="/static/icons/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="/static/icons/favicon-16x16.png" sizes="16x16">
@@ -128,7 +135,7 @@ function respond(res, vdom, data) {
     <meta name="msapplication-config" content="/static/icons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
     <script>var initData = ${JSON.stringify(data)};</script>
-    <script src="/static/fontfaceobserver.js"></script>
+    <script src="/static/custom-font.js" async></script>
     <script src="/static/index.js" defer></script>
     ${doc}
   `);
