@@ -41,3 +41,4 @@ polls-db
 
 public/*.js
 public/*.css
+public/*.map
