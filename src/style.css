@@ -81,3 +81,47 @@ form button {
 .fonts-loaded h1 {
   font-family: 'Lobster', fantasy;
 }
+
+.question {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2em;
+  box-sizing: border-box;
+}
+
+.question h1 {
+  margin: 0;
+}
+
+.results {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.results > * {
+  flex-grow: 1;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  margin: 2em 0;
+}
+
+.results > * .bar {
+  flex-grow: 1;
+  margin-top: 0.5em;
+}
+
+.bar {
+  background-color: white;
+  transform-origin: left;
+  color: #333;
+  max-height: 2em;
+}
