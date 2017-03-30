@@ -1,9 +1,10 @@
 /* eslint-env browser */
-/* global io initData */
+/* global initData */
 
 const diff = require('virtual-dom/diff');
 const patch = require('virtual-dom/patch');
 const createElement = require('virtual-dom/create-element');
+const io = require('socket.io-client');
 const {renderResult} = require('../../lib/render');
 
 module.exports = function () {
