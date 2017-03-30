@@ -25,7 +25,10 @@ const files = [
 
 const sslOptions = {
   key: production ? fs.readFileSync('/etc/letsencrypt/live/polls.rijks.website/privkey.pem') : fs.readFileSync(path.join(__dirname, 'server.key')),
-  cert: production ? fs.readFileSync('/etc/letsencrypt/live/polls.rijks.website/fullchain.pem') : fs.readFileSync(path.join(__dirname, 'server.crt'))
+  cert: production ? fs.readFileSync('/etc/letsencrypt/live/polls.rijks.website/fullchain.pem') : fs.readFileSync(path.join(__dirname, 'server.crt')),
+  spdy: {
+    protocols: ['h2', 'http/1.1']
+  }
 };
 
 const app = express()
