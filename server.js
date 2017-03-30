@@ -17,50 +17,39 @@ const server = express()
   .use('/static/', express.static('public', {maxAge: '31d'}))
   .use(bodyParser.urlencoded({extended: false}))
   .get('/', getHome)
-  .post('/', postHome)
-  .get('/:id', getRoom)
-  .get('/:id/:answerId', vote)
+  .post('/', createInstance)
+  .get('/:id', getInstance)
+  .get('/:id/:answerId', voteRoute)
   .listen(port, host, () => console.log(`server started ${host}:${port} 💯`));
 
 const io = new Socket(server)
-  .on('connection', joinRoom)
-  .on('disconnect', leaveRoom);
+  .on('connection', connectSocket)
+  .on('disconnect', disconnectSocket);
 
-function joinRoom(socket) {
-  const referer = socket.conn.request.headers.referer;
-  const id = referer.substr(referer.lastIndexOf('/') + 1);
-  socket.join(id);
-
-  socket.on('vote', socketVote);
-
-  function socketVote(vote) {
-    vote = vote.split('/');
-    db.get(vote[0], (err, val) => {
-      val.options[vote[1]].votes++;
-      db.put(vote[0], val, () => {
-        io.in(vote[0]).emit('update', val);
+function vote(questionId, answerId, callback) {
+  db.get(questionId, (err, val) => {
+    if (err) {
+      callback(err);
+    } else {
+      val.options[answerId].votes++;
+      db.put(questionId, val, err => {
+        callback(err, val);
       });
-    });
-  }
-}
-
-function leaveRoom(socket) {
-  const referer = socket.conn.request.headers.referer;
-  const id = referer.substr(referer.lastIndexOf('/') + 1);
-  socket.leave(id);
+    }
+  });
 }
 
 function getHome(req, res) {
   return respond(res, renderHome());
 }
 
-function postHome(req, res) {
+function createInstance(req, res) {
   const id = shortid.generate();
   createRoom(id, req.body.question, req.body.answers);
   res.redirect('/' + id);
 }
 
-function getRoom(req, res) {
+function getInstance(req, res) {
   db.get(req.params.id, (err, val) => {
     if (err) {
       res.redirect('/');
@@ -70,17 +59,44 @@ function getRoom(req, res) {
   });
 }
 
-function vote(req, res) {
-  db.get(req.params.id, (err, val) => {
+function voteRoute(req, res) {
+  vote(req.params.id, req.params.answerId, callback);
+
+  function callback(err) {
     if (err) {
       res.redirect('/');
     } else {
-      val.options[req.params.answerId].votes++;
-      db.put(req.params.id, val, () => {
-        res.redirect('/' + req.params.id);
-      });
+      res.redirect('/' + req.params.id);
     }
-  });
+  }
+}
+
+function connectSocket(socket) {
+  socket.join(getSocketRoomId(socket));
+
+  socket.on('vote', socketVote);
+
+  function socketVote(ids) {
+    ids = ids.split('/');
+
+    vote(ids[0], ids[1], callback);
+
+    function callback(err, val) {
+      if (err) {
+        console.log(err);
+      }
+
+      io.in(ids[0]).emit('update', val);
+    }
+  }
+}
+
+function disconnectSocket(socket) {
+  socket.leave(getSocketRoomId(socket));
+}
+
+function getSocketRoomId(socket) {
+  return socket.conn.request.headers.referer.substr(socket.conn.request.headers.referer.lastIndexOf('/') + 1);
 }
 
 function createRoom(id, question, answers) {
