@@ -18,17 +18,17 @@ Polls is a simple web-based tool which lets you create a poll to a share-able li
 The app was built using some of the latest (and greatest) in web technology while also keeping the best practices of progressive enhancement in mind.
 
 ## Features
-### https & http/2
-The app is being served over http/2 with a https certificate by Let's Encrypt and a improved Diffie Hellman group. This results in a very strong encryption.
+### http2 & Server push
+http/2 allows the client to request and download all assets in parallel, which greatly improves load speeds. Server Push allows the server to push extra files to the browser on initial request. This comes in quite handy for files like the stylesheet and main JS file.
 
-![SSL Report by SSL Labs](media/ssl-report.png)  
-[SSL Report results by SSL Labs](https://www.ssllabs.com/ssltest/analyze.html?d=polls.rijks.website)
+*Without server push*
+![h2 without server push](media/h2-without.png)
 
-See [my research on this](https://github.com/rijkvanzanten/misofome/wiki/Rijks-POC) for more information.
-
-http/2 allows the client to request and download all assets in parallel, which greatly improves load speeds.
+*Without server push*
+![h2 without server push](media/h2-with.png)
 
 #### Support (94.19%)
+_Not including streaming, couldn't find support stats for that one_
 -  [x] IE (11+)
 -  [x] Edge (12+)
 -  [x] Firefox (36+)
@@ -42,6 +42,32 @@ http/2 allows the client to request and download all assets in parallel, which g
 
 #### Fallback
 The server will automatically serve files over http/1.1 when http/2 isn't supported. The speed optimizations for http2 will result in a big performance hit on browser which don't support it. The big speed improvements for the large majority outweigh the performance issues on older browsers.
+
+### https
+The app is being served over http/2 with a https certificate by Let's Encrypt and a improved Diffie Hellman group. This results in a very strong encryption.
+
+![SSL Report by SSL Labs](media/ssl-report.png)  
+[SSL Report results by SSL Labs](https://www.ssllabs.com/ssltest/analyze.html?d=polls.rijks.website)
+
+See [my research on this](https://github.com/rijkvanzanten/misofome/wiki/Rijks-POC) for more information.
+
+#### Support (100%)
+_This is specifically for my live [lets encrypt certificate](https://community.letsencrypt.org/t/which-browsers-and-operating-systems-support-lets-encrypt/4394)_
+-  [x] IE (XP SP3+)
+-  [x] Edge
+-  [x] Firefox (2+)
+-  [x] Chrome
+-  [x] Safari (4+)
+-  [x] Opera
+-  [x] iOS Safari (3.1+)
+-  [x] Opera Mini
+-  [x] Android Browser (2.3.6+)
+-  [x] Chrome for Android
+
+_All browser support at least the now deprecated SSL spec. Most modern browser use TLS_
+
+#### Fallback
+None. The site should and will be secure. There is no real reason to provide an unsecure version when the browser support is this great.
 
 
 ### WebSockets
