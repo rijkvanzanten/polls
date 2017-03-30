@@ -124,4 +124,6 @@ form button {
   transform-origin: left;
   color: #333;
   max-height: 2em;
+  will-change: transform;
+  transition: transform 100ms ease-in-out;
 }
