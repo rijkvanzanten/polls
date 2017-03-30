@@ -54,7 +54,7 @@ function getInstance(req, res) {
     if (err) {
       res.redirect('/');
     } else {
-      respond(res, renderResult(req.params.id, val, true));
+      respond(res, renderResult(req.params.id, val, true), [req.params.id, val, true]);
     }
   });
 }
@@ -110,7 +110,7 @@ function createRoom(id, question, answers) {
   db.put(id, {question, options});
 }
 
-function respond(res, vdom) {
+function respond(res, vdom, data) {
   const doc = toString(vdom);
 
   res.send(`
@@ -119,6 +119,7 @@ function respond(res, vdom) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polls</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script>var initData = ${JSON.stringify(data)};</script>
     <script src="/static/fontfaceobserver.js"></script>
     <script src="/socket.io/socket.io.js" defer></script>
     <script src="/static/index.js" defer></script>
