@@ -75,6 +75,27 @@ Virtual DOM isn't a browser API or new technique so it should technically run on
 #### Fallback
 The virtual-dom rendering is also used on the server-side. When client-side JS fails or won't start at all, it will gracefully fall back to the server pre-rendered HTML. I won't update automatically anymore though, but new results can still be viewed by refreshing the page manually.
 
+### ServiceWorker
+A service worker is a script that the browser runs in the background, separate from a web page. This is very exiting, because it allows developers to create webpages which support offline experiences.
+
+#### Support (59.58%)
+-  [ ] IE
+-  [ ] Edge
+-  [x] Firefox (44+) (Partial)
+-  [x] Chrome (40+) (Partial)
+-  [ ] Safari
+-  [x] Opera (27+) (Partial)
+-  [ ] iOS Safari
+-  [ ] Opera Mini
+-  [x] Android Browser (56+) (Partial)
+-  [x] Chrome for Android (57+) (Partial)
+
+#### Fallback
+As long as you don't rely on the ServiceWorker for the inner workings of your app, you'll be fine. ServiceWorkers work beautifully progressively enhanced on all browsers which support ServiceWorkers. It can be easily feature checked by checking
+```js
+'serviceWorker' in navigator
+```
+
 ## Installation & Development
 To run a local copy of the app:  
 
