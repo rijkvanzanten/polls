@@ -1,19 +1,34 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const shortid = require('shortid');
 const Socket = require('socket.io');
 const toString = require('vdom-to-html');
 const compression = require('compression');
+const spdy = require('spdy');
 const db = require('levelup')('polls-db', {
   valueEncoding: 'json'
 });
 const {renderHome, renderResult} = require('./lib/render');
 
-const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
+const production = process.env.NODE_ENV === 'production';
 
-const server = express()
+// Read static assets that will be pushed to the client
+const files = [
+  fs.readFileSync(path.join(__dirname, 'public', 'fonts.css')),
+  fs.readFileSync(path.join(__dirname, 'public', 'style.css')),
+  fs.readFileSync(path.join(__dirname, 'public', 'index.js')),
+  fs.readFileSync(path.join(__dirname, 'public', 'custom-font.js'))
+];
+
+const sslOptions = {
+  key: production ? fs.readFileSync('/etc/letsencrypt/live/polls.rijks.website/privkey.pem') : fs.readFileSync(path.join(__dirname, 'server.key')),
+  cert: production ? fs.readFileSync('/etc/letsencrypt/live/polls.rijks.website/fullchain.pem') : fs.readFileSync(path.join(__dirname, 'server.crt'))
+};
+
+const app = express()
   .use(compression())
   .use('/static/', express.static('public', {maxAge: '31d'}))
   .use('/sw.js', sendServiceWorker)
@@ -21,8 +36,16 @@ const server = express()
   .get('/', getHome)
   .post('/', createInstance)
   .get('/:id', getInstance)
-  .get('/:id/:answerId', voteRoute)
-  .listen(port, host, () => console.log(`server started ${host}:${port} 💯`));
+  .get('/:id/:answerId', voteRoute);
+
+const server = spdy
+  .createServer(sslOptions, app)
+  .listen(port, err => {
+    if (err) {
+      throw err;
+    }
+    console.log(`Listening on port: ${port}`);
+  });
 
 const io = new Socket(server)
   .on('connection', connectSocket)
@@ -118,6 +141,45 @@ function createRoom(id, question, answers) {
 
 function respond(res, vdom, data) {
   const doc = toString(vdom);
+
+  if (res.push) {
+    // TODO: Clean this up
+    res.push('/static/fonts.css', {
+      request: {accept: '*/*'},
+      response: {'content-type': 'text/css'}
+    })
+    .on('error', err => {
+      console.log(err);
+    })
+    .end(files[0]);
+
+    res.push('/static/style.css', {
+      request: {accept: '*/*'},
+      response: {'content-type': 'text/css'}
+    })
+    .on('error', err => {
+      console.log(err);
+    })
+    .end(files[1]);
+
+    res.push('/static/index.js', {
+      request: {accept: '*/*'},
+      response: {'content-type': 'text/javascript'}
+    })
+    .on('error', err => {
+      console.log(err);
+    })
+    .end(files[2]);
+
+    res.push('/static/custom-font.js', {
+      request: {accept: '*/*'},
+      response: {'content-type': 'text/javascript'}
+    })
+    .on('error', err => {
+      console.log(err);
+    })
+    .end(files[3]);
+  }
 
   res.send(`
     <!doctype html>
