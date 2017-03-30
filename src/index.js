@@ -2,14 +2,24 @@
 /* global io */
 const socket = io();
 
-socket.on('connect', () => {
-  document.querySelectorAll('a').forEach(a => a.addEventListener('click', e => {
-    socket.emit('vote', e.target.getAttribute('href'));
-    e.preventDefault();
-    return false;
-  }));
-});
+io()
+  .on('connect', convertAnchors)
+  .on('update', update);
 
-socket.on('update', data => {
+function convertAnchors() {
+  document.querySelectorAll('a').forEach(addEventListener);
+
+  function addEventListener(a) {
+    a.addEventListener('click', addSocketEmitListener);
+
+    function addSocketEmitListener(e) {
+      socket.emit('vote', e.target.getAttribute('href'));
+      e.preventDefault();
+      return false;
+    }
+  }
+}
+
+function update(data) {
   console.log(data);
-});
+}
