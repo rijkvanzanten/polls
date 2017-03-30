@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const shortid = require('shortid');
@@ -15,6 +16,7 @@ const port = process.env.PORT || 3000;
 const server = express()
   .use(compression())
   .use('/static/', express.static('public', {maxAge: '31d'}))
+  .use('/sw.js', sendServiceWorker)
   .use(bodyParser.urlencoded({extended: false}))
   .get('/', getHome)
   .post('/', createInstance)
@@ -25,6 +27,10 @@ const server = express()
 const io = new Socket(server)
   .on('connection', connectSocket)
   .on('disconnect', disconnectSocket);
+
+function sendServiceWorker(req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'sw.js'));
+}
 
 function vote(questionId, answerId, callback) {
   db.get(questionId, (err, val) => {
