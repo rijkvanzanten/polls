@@ -1,12 +1,9 @@
-const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const shortid = require('shortid');
 const Socket = require('socket.io');
 const toString = require('vdom-to-html');
-const uuidV1 = require('uuid/v1');
 const compression = require('compression');
-const session = require('express-session');
 const db = require('levelup')('polls-db', {
   valueEncoding: 'json'
 });
@@ -19,13 +16,6 @@ const server = express()
   .use(compression())
   .use('/static/', express.static('public', {maxAge: '31d'}))
   .use(bodyParser.urlencoded({extended: false}))
-  .use(session({
-    secret: uuidV1(),
-    saveUninitialized: true,
-    resave: false,
-    cookie: {maxAge: 86400000}
-  }))
-  .use(initSession)
   .get('/', getHome)
   .post('/', postHome)
   .get('/:id', getRoom)
@@ -60,20 +50,6 @@ function leaveRoom(socket) {
   socket.leave(id);
 }
 
-function initSession(req, res, next) {
-  if (req.headers.cookie) {
-    res.locals.cookiesEnabled = true;
-  } else {
-    res.locals.cookiesEnabled = false;
-  }
-
-  if (!req.session.voted) {
-    req.session.voted = [];
-  }
-
-  return next();
-}
-
 function getHome(req, res) {
   return respond(res, renderHome());
 }
@@ -89,27 +65,18 @@ function getRoom(req, res) {
     if (err) {
       res.redirect('/');
     } else {
-      const votingAllowed = res.locals.cookiesEnabled && req.session.voted.includes(req.params.id) === false;
-      respond(res, renderResult(req.params.id, val, votingAllowed));
+      respond(res, renderResult(req.params.id, val, true));
     }
   });
 }
 
 function vote(req, res) {
-  // Disable voting when cookies aren't enabled or already has voted on
-  if (!res.locals.cookiesEnabled || req.session.voted.includes(req.params.id)) {
-    return res.redirect('/' + req.params.id);
-  }
-
   db.get(req.params.id, (err, val) => {
     if (err) {
       res.redirect('/');
     } else {
       val.options[req.params.answerId].votes++;
       db.put(req.params.id, val, () => {
-        if (!req.session.voted.includes(req.params.id)) {
-          req.session.voted.push(req.params.id);
-        }
         res.redirect('/' + req.params.id);
       });
     }
