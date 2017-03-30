@@ -128,7 +128,7 @@ function respond(res, vdom, data) {
     <meta name="msapplication-config" content="/static/icons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
     <script>var initData = ${JSON.stringify(data)};</script>
-    <script src="/static/fontfaceobserver.js"></script>
+    <script src="/static/fontfaceobserver.js" defer></script>
     <script src="/static/index.js" defer></script>
     ${doc}
   `);
