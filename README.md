@@ -1,5 +1,5 @@
 <h1 align="center">
-	<img width="400" src="media/polls.svg" alt="Awesome">
+	<img width="400" src="media/polls.png" alt="Awesome">
 	<br>
 	<br>
 </h1>
