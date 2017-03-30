@@ -1,12 +1,9 @@
-const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const shortid = require('shortid');
 const Socket = require('socket.io');
 const toString = require('vdom-to-html');
-const uuidV1 = require('uuid/v1');
 const compression = require('compression');
-const session = require('express-session');
 const db = require('levelup')('polls-db', {
   valueEncoding: 'json'
 });
@@ -19,79 +16,87 @@ const server = express()
   .use(compression())
   .use('/static/', express.static('public', {maxAge: '31d'}))
   .use(bodyParser.urlencoded({extended: false}))
-  .use(session({
-    secret: uuidV1(),
-    saveUninitialized: true,
-    resave: false,
-    cookie: {maxAge: 86400000}
-  }))
-  .use(initSession)
   .get('/', getHome)
-  .post('/', postHome)
-  .get('/:id', getRoom)
-  .get('/:id/:answerId', vote)
+  .post('/', createInstance)
+  .get('/:id', getInstance)
+  .get('/:id/:answerId', voteRoute)
   .listen(port, host, () => console.log(`server started ${host}:${port} 💯`));
 
-const io = new Socket(server);
+const io = new Socket(server)
+  .on('connection', connectSocket)
+  .on('disconnect', disconnectSocket);
 
-io.on('connection', socket => {
-
-});
-
-function initSession(req, res, next) {
-  if (req.headers.cookie) {
-    res.locals.cookiesEnabled = true;
-  } else {
-    res.locals.cookiesEnabled = false;
-  }
-
-  if (!req.session.voted) {
-    req.session.voted = [];
-  }
-
-  return next();
+function vote(questionId, answerId, callback) {
+  db.get(questionId, (err, val) => {
+    if (err) {
+      callback(err);
+    } else {
+      val.options[answerId].votes++;
+      db.put(questionId, val, err => {
+        callback(err, val);
+      });
+    }
+  });
 }
 
 function getHome(req, res) {
   return respond(res, renderHome());
 }
 
-function postHome(req, res) {
+function createInstance(req, res) {
   const id = shortid.generate();
   createRoom(id, req.body.question, req.body.answers);
   res.redirect('/' + id);
 }
 
-function getRoom(req, res) {
+function getInstance(req, res) {
   db.get(req.params.id, (err, val) => {
     if (err) {
       res.redirect('/');
     } else {
-      const votingAllowed = res.locals.cookiesEnabled && req.session.voted.includes(req.params.id) === false;
-      respond(res, renderResult(req.params.id, val, votingAllowed));
+      respond(res, renderResult(req.params.id, val, true), [req.params.id, val, true]);
     }
   });
 }
 
-function vote(req, res) {
-  // Disable voting when cookies aren't enabled or already has voted on
-  if (!res.locals.cookiesEnabled || req.session.voted.includes(req.params.id)) {
-    return res.redirect('/' + req.params.id);
-  }
+function voteRoute(req, res) {
+  vote(req.params.id, req.params.answerId, callback);
 
-  db.get(req.params.id, (err, val) => {
+  function callback(err) {
     if (err) {
       res.redirect('/');
     } else {
-      val.options[req.params.answerId].votes++;
-      db.put(req.params.id, val, () => {
-        if (!req.session.voted.includes(req.params.id)) {
-          req.session.voted.push(req.params.id);
-        }
-        res.redirect('/' + req.params.id);
-      });
+      res.redirect('/' + req.params.id);
     }
-  });
+  }
+}
+
+function connectSocket(socket) {
+  socket.join(getSocketRoomId(socket));
+
+  socket.on('vote', socketVote);
+
+  function socketVote(ids) {
+    ids = ids.split('/');
+
+    vote(ids[0], ids[1], callback);
+
+    function callback(err, val) {
+      if (err) {
+        console.log(err);
+      }
+
+      io.in(ids[0]).emit('update', val);
+    }
+  }
+}
+
+function disconnectSocket(socket) {
+  socket.leave(getSocketRoomId(socket));
+}
+
+function getSocketRoomId(socket) {
+  return socket.conn.request.headers.referer.substr(socket.conn.request.headers.referer.lastIndexOf('/') + 1);
 }
 
 function createRoom(id, question, answers) {
@@ -105,7 +110,7 @@ function createRoom(id, question, answers) {
   db.put(id, {question, options});
 }
 
-function respond(res, vdom) {
+function respond(res, vdom, data) {
   const doc = toString(vdom);
 
   res.send(`
@@ -114,7 +119,9 @@ function respond(res, vdom) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polls</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script>var initData = ${JSON.stringify(data)};</script>
     <script src="/static/fontfaceobserver.js"></script>
+    <script src="/socket.io/socket.io.js" defer></script>
     <script src="/static/index.js" defer></script>
     ${doc}
   `);
