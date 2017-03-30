@@ -27,6 +27,8 @@ http/2 allows the client to request and download all assets in parallel, which g
 *Without server push*
 ![h2 without server push](media/h2-with.png)
 
+_Nginx doesn't support http/2 between proxies and upstreams. The effects of this won't be visible on the live site._
+
 #### Support (94.19%)
 _Not including streaming, couldn't find support stats for that one_
 -  [x] IE (11+)
