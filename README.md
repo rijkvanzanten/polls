@@ -223,6 +223,7 @@ $ npm run watch-server
 -  [ ] Prevent submitting empty question
 -  [ ] Convert bar `div`s to `meter`
 -  [ ] Add `<noscript>` to warn about the lack of refreshing without JS
+-  [ ] Add 'enter to next line' instruction to textarea
 
 ## License
 MIT License
