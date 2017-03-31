@@ -221,7 +221,7 @@ $ npm run watch-server
 ## TODOs & Wishlist
 -  [ ] Add placeholders to input fields
 -  [ ] Prevent submitting empty question
--  [ ] Convert bar `div`s to `progress`
+-  [ ] Convert bar `div`s to `meter`
 -  [ ] Add `<noscript>` to warn about the lack of refreshing without JS
 
 ## License
