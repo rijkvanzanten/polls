@@ -188,6 +188,7 @@ function respond(res, vdom, data) {
 
   res.send(`
     <!doctype html>
+    <html lang="nl">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polls</title>
