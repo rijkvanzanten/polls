@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-if (document.querySelector('main').classList.contains('question')) {
+if (document.querySelector('main').className === 'question') {
   require('./modules/socket.js')();
 }
 
