@@ -218,6 +218,10 @@ To automatically restart the server on change run:
 $ npm run watch-server
 ```
 
+## TODOs & Wishlist
+-  [ ] Add placeholders to input fields
+-  [ ] Prevent submitting empty question
+
 ## License
 MIT License
 
