@@ -61,6 +61,7 @@ form button {
   color: white;
   border: 3px solid white;
   cursor: pointer;
+  width: 30%;
 
   &:focus,
   &:hover {
