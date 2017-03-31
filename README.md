@@ -221,6 +221,7 @@ $ npm run watch-server
 ## TODOs & Wishlist
 -  [ ] Add placeholders to input fields
 -  [ ] Prevent submitting empty question
+-  [ ] Convert bar `div`s to `progress`
 
 ## License
 MIT License
