@@ -94,6 +94,8 @@ function getInstance(req, res) {
 function voteRoute(req, res) {
   vote(req.params.id, req.params.answerId, callback);
 
+  socketVote(`${req.params.id}/${req.params.answerId}`);
+
   function callback(err) {
     if (err) {
       res.redirect('/');
@@ -107,19 +109,19 @@ function connectSocket(socket) {
   socket.join(getSocketRoomId(socket));
 
   socket.on('vote', socketVote);
+}
 
-  function socketVote(ids) {
-    ids = ids.split('/');
+function socketVote(ids) {
+  ids = ids.split('/');
 
-    vote(ids[0], ids[1], callback);
+  vote(ids[0], ids[1], callback);
 
-    function callback(err, val) {
-      if (err) {
-        console.log(err);
-      }
-
-      io.in(ids[0]).emit('update', val);
+  function callback(err, val) {
+    if (err) {
+      console.log(err);
     }
+
+    io.in(ids[0]).emit('update', val);
   }
 }
 
