@@ -151,6 +151,25 @@ if ('FontFace' in window) {
 #### Fallback
 If the browser doesn't support CSS Font Loading API, the custom won't be applied to the DOM. This results in fallback fonts for the headers.
 
+## What if..
+### .. JavaScript completely fails?
+The core functionality of the app (creating and voting on polls) is also possible without JavaScript. The code that renders a virtual dom is also being used on the server. The output html will always be the same.  
+You'll lose the webSocket support of course, but you'll still be able to get up to date results by refreshing the page.
+
+### .. custom display font won't load?
+I've used the native CSS Font Loading API to fire a function when the custom font has loaded. In this function, I add a class to the `<html>` element which then in turns applies the custom font. As long as the font isn't loaded — or isn't going to load at all — a default fallback font will be displayed.
+
+### .. I have deuteranopia, deuteranomaly, protanopia, or protanomaly?
+You should be just fine
+
+![Color test](media/colors.png)
+
+### .. I currently reside in Bakkum?
+The app will still load quite fast
+
+_App load on GPRS throttling_
+![Loading speed graph](media/loading-speed.png)
+
 ## Installation & Development
 To run a local copy of the app:  
 
