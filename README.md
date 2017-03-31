@@ -222,6 +222,7 @@ $ npm run watch-server
 -  [ ] Add placeholders to input fields
 -  [ ] Prevent submitting empty question
 -  [ ] Convert bar `div`s to `progress`
+-  [ ] Add `<noscript>` to warn about the lack of refreshing without JS
 
 ## License
 MIT License
