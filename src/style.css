@@ -11,6 +11,12 @@ html {
   height: 100%;
 }
 
+@media screen and (max-width: 40em) {
+  html {
+    font-size: 120%;
+  }
+}
+
 body {
   background-color: #ff3f5f;
   background-image: linear-gradient(to top, #ff0844 0%, #ffb199 100%);
